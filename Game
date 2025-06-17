@@ -1,0 +1,68 @@
+import random
+
+# Define the grid size and word list
+GRID_SIZE = 10
+WORDS = ["PYTHON", "CODE", "PUZZLE", "SEARCH", "GRID"]
+
+# Initialize empty grid
+grid = [[' ' for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+
+# Directions: right or down
+DIRECTIONS = [(0, 1), (1, 0)]
+
+def can_place(word, row, col, direction):
+    dx, dy = direction
+    for i in range(len(word)):
+        r = row + dx * i
+        c = col + dy * i
+        if r >= GRID_SIZE or c >= GRID_SIZE:
+            return False
+        if grid[r][c] != ' ' and grid[r][c] != word[i]:
+            return False
+    return True
+
+def place_word(word):
+    placed = False
+    attempts = 0
+    while not placed and attempts < 100:
+        row = random.randint(0, GRID_SIZE - 1)
+        col = random.randint(0, GRID_SIZE - 1)
+        direction = random.choice(DIRECTIONS)
+        if can_place(word, row, col, direction):
+            for i in range(len(word)):
+                grid[row + direction[0] * i][col + direction[1] * i] = word[i]
+            placed = True
+        attempts += 1
+
+# Place all words
+for word in WORDS:
+    place_word(word)
+
+# Fill empty spaces with random letters
+for r in range(GRID_SIZE):
+    for c in range(GRID_SIZE):
+        if grid[r][c] == ' ':
+            grid[r][c] = random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+
+# Show the grid
+print("Word Search Puzzle:")
+for row in grid:
+    print(' '.join(row))
+print("\nFind these words:")
+print(", ".join(WORDS))
+
+# Optional: check user input
+found = set()
+while len(found) < len(WORDS):
+    guess = input("Enter a word you found (or 'quit' to stop): ").upper()
+    if guess == "QUIT":
+        break
+    if guess in WORDS and guess not in found:
+        print("Correct!")
+        found.add(guess)
+    elif guess in found:
+        print("Already found.")
+    else:
+        print("Incorrect or not in the list.")
+
+print("Game Over.")
